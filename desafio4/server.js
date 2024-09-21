@@ -40,12 +40,20 @@ app.use('/pelicula/:pelicula',(req,res)=>{
     }
 });
 
-app.use('/productos',(req,res)=>{
-  res.send(array_productos);
-});
-app.use('/productos/:id',(req,res)=>{
-    const producto = res.params.id;
-    
+
+app.get('/productos/:id?', (req, res) => {
+    const productoId = parseInt(req.params.id, 10);
+    if (isNaN(productoId)) {
+        res.send(array_productos);
+    } else {
+        const producto = array_productos.find(p => p.id === productoId);
+
+        if (producto) {
+            res.send(producto);
+        } else {
+            res.status(404).send('Producto no encontrado');
+        }
+    }
 });
 app.use((req,res) =>{
     res.status(404).send('Pagina no encontrada');
