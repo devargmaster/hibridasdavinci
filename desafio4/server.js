@@ -41,11 +41,11 @@ app.use('/pelicula/:pelicula',(req,res)=>{
 });
 
 
-app.get('/productos/:id?', (req, res) => {
-    const productoId = parseInt(req.params.id, 10);
-    if (isNaN(productoId)) {
-        res.send(array_productos);
-    } else {
+app.get('/productos', (req, res) => {
+    const { id, min, max } = req.query;
+
+    if (id) {
+        const productoId = parseInt(id, 10);
         const producto = array_productos.find(p => p.id === productoId);
 
         if (producto) {
@@ -53,6 +53,13 @@ app.get('/productos/:id?', (req, res) => {
         } else {
             res.status(404).send('Producto no encontrado');
         }
+    } else if (min || max) {
+        const minPrecio = parseFloat(min) || 0;
+        const maxPrecio = parseFloat(max) || Infinity;
+        const productosFiltrados = array_productos.filter(p => p.precio >= minPrecio && p.precio <= maxPrecio);
+        res.send(productosFiltrados);
+    } else {
+        res.send(array_productos);
     }
 });
 app.use((req,res) =>{
